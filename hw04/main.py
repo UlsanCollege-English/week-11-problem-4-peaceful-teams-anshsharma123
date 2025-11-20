@@ -1,15 +1,26 @@
+"""
+HW04 — Peaceful Teams (Bipartite Check)
+
+Implement:
+- bipartition(graph)
+"""
+
 from collections import deque
 
 def bipartition(graph):
+    """Return (left_set, right_set) if the graph is bipartite; else None.
+
+    The graph is an adjacency-list dict representing an undirected graph.
+    Use BFS coloring over all components:
+    - Maintain a color dict: node -> 0 or 1
+    - For each uncolored node, start BFS, color it 0
+    - Neighbors get the opposite color
+    - If a conflict is found (same-color neighbors), return None
     """
-    Return (left_set, right_set) if bipartite; else None.
-    BFS coloring over all components.
-    """
-    color = {}   # node -> 0 or 1
+    color = {}  # node -> 0 or 1
 
     for start in graph:
         if start not in color:
-            # Begin BFS for a new component
             color[start] = 0
             queue = deque([start])
 
@@ -20,11 +31,12 @@ def bipartition(graph):
                         color[v] = 1 - color[u]
                         queue.append(v)
                     else:
-                        # Conflict: same color on an edge
+                        # Same-colored neighbor → not bipartite
                         if color[v] == color[u]:
                             return None
 
-    # If we reach here, coloring succeeded
-    left  = {u for u in color if color[u] == 0}
-    right = {u for u in color if color[u] == 1}
-    return left, right
+    # Build the two teams (sets)
+    left = {node for node, c in color.items() if c == 0}
+    right = {node for node, c in color.items() if c == 1}
+
+    return (left, right)
